@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>檢查此身份證字號是否在黑名單中</title>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <style>
+    body {
+      padding-top: 40px;
+      padding-bottom: 40px;
+      background-color: #eee;
+    }
+
+    .form-inspect {
+      max-width: 330px;
+      padding: 15px;
+      margin: 0 auto;
+    }
+
+    .form-inspect .form-control {
+      position: relative;
+      height: auto;
+      -webkit-box-sizing: border-box;
+         -moz-box-sizing: border-box;
+              box-sizing: border-box;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    .form-inspect .form-control:focus {
+      z-index: 2;
+    }
+
+    .form-inspect input[type="text"] {
+      margin-bottom: 10px;
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    .show-result {
+      max-width: 330px;
+      margin: 0 auto;
+    }
+    
+    #msg {
+      border: 1px solid #ccc;
+      height: 150px;
+      padding: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <form class="form-inspect" id="form">
+      <h2 class="form-inspect-heading">黑名單查詢系統</h2>
+      <label for="inputTwid" class="sr-only">請輸入身份證字號</label>
+      <input type="text" id="twid" class="form-control" placeholder="請輸入身份證字號" required autofocus>
+      <button class="btn btn-lg btn-primary btn-block" type="submit" id="check">查詢</button>
+    </form>
+    <div class="show-result">
+      <div id="msg" class="form-control" rows="6"></div>
+      <ul>
+        <li>登記黑名單：<a href="https://docs.google.com/forms/d/e/1FAIpQLSdrI7G7T-KPcZWaX7DlvXW2WmTL7AWJrHRXK5gjtEAZ6amuVA/viewform" target="_blank">點我</a></li>
+        <li>資料庫：<a href="資料庫：https://bit.ly/2Q6yfYo" target="_blank">點我</a></li>
+        <li>由於個資法，本系統不會蒐集身份證字號，僅供送養人查詢認養人之身份證字號是否有被登記過黑名單供參考</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    var form = document.getElementById("form")
+    var twid = document.getElementById("twid")
+    var check = document.getElementById("check")
+    var msg = document.getElementById("msg")
+
+    form.addEventListener("submit", function (event) {
+      check.disabled = true;
+      event.preventDefault();
+
+      var value = twid.value
+      var url = "https://script.google.com/macros/s/AKfycbxE35l8uQy3uptPwmiaD4-Vlx6P3wgagIxVcyYdEbLHcyS-CaI/exec?twid=" + value;
+      
+      $.get(url, function(e){
+        var text = ''
+
+        if (e === 'false') {
+          text = '<span style="color: green">不在黑名單中</span>';
+        } else if (e === 'true') {
+          text = '<span style="color: red">在黑名單中</span>';
+        } else {
+          text = '請填寫正確的身份證字號';
+        }
+        
+        msg.innerHTML = value + ': ' + text + '<br>' + msg.innerHTML;
+        check.disabled = false;
+      }).fail(function(e) {
+        alert("發生錯誤");
+        check.disabled = false;
+      });
+    })
+  </script>
+</body>
+</html>
